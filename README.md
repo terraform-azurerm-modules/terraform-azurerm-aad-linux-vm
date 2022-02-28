@@ -1,40 +1,15 @@
 # terraform-azurerm-arc-onprem-linux-vm
 
-Module to create an Azure VM without an Azure Agent and with the IMDS endpoint blocked.
+Module to create an Azure VM with the AAD extension configured.
 
-These modification allow the VM to be onboarded to Azure as an Azure Arc-enabled Server using the azcmagent.
+It also includes a valid cloud_init.yaml which will install:
 
-Most variables are self explanatory, and prepare the VM for manual or scale onboarding.
+* azure-cli
+* terraform
+* jq
+* stress
+* tree
 
-For a more automated onboarding, use the following:
+It also updates the skeleton bashrc with a JQ_COLORS setting to match the Azure CLI's jsonc output colour scheme.
 
-| var | type | description |
-|---|---|---|
-|azcmagent | bool | Set to true to download and install the azcmagent binary. |
-|arc | object | Create a service principal with . Add required onboarding details - including the target resource group - to the arc object to automatically onboard. |
-
-Example:
-
-```hcl
-azcmagent = true
-
-arc = {
-    tenant_id                = "tenant"
-    service_principal_appid  = "appId"
-    service_principal_secret = "password"
-
-    subscription_id     = "subscriptionId"
-    resource_group_name = "arc_poc"
-    location            = "uksouth"
-
-    tags = {
-      platform   = "vSphere"
-      datacentre = "Citadel"
-      location   = "Reading"
-    }
-  }
-```
-
-The resource group needs to pre-exist. The service principal requires the Azure Connected Machine Onboarding role on the resource group.
-
-See <https://github.com/terraform-azurerm-examples/arc-onprem-servers> for a fuller example.
+Intended for use by the [examples](https://github.com/terraform-azurerm-examples).
