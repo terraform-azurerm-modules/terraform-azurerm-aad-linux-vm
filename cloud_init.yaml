@@ -40,6 +40,11 @@ apt:
         -----END PGP PUBLIC KEY BLOCK-----
       filename: azure-cli.list
 
+    git:
+      source: 'deb http://ppa.launchpad.net/git-core/ppa/ubuntu $RELEASE main'
+      keyid: A1715D88E1DF1F24
+      filename: git.list
+
     terraform:
       source: 'deb https://apt.releases.hashicorp.com $RELEASE main'
       key: |
@@ -110,6 +115,7 @@ package_upgrade: true
 
 runcmd:
  - echo "Starting runcmds at $(date +%H:%M:%S)"
+ - git config --system init.defaultBranch main
  - echo "Finished runcmds at $(date +%H:%M:%S)"
 
 write_files:
