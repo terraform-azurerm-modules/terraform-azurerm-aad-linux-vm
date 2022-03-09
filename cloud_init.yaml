@@ -1,20 +1,31 @@
 #cloud-config
-#
+
 # This is an example cloud-init file.
 # <https://cloudinit.readthedocs.io/en/latest/topics/examples.html>
 # Don't create files in /tmp during the early stages that cloud-init works in. Use /var/run.
-# Generated runcmd script (run as root): sudo cat /var/lib/cloud/instance/scripts/runcmd
-# Cloud-init output: cat /var/log/cloud-init-output.log
 
-cloud_config_modules:
-  - apt_configure
-  - package_update_upgrade_install
-  - runcmd
+# cloud-init's instance metadata:
+# sudo cat /run/cloud-init/instance-data.json | jq .
 
-cloud_final_modules:
-  - scripts-user
+# Generated runcmd script (run as root):
+# sudo cat /var/lib/cloud/instance/scripts/runcmd
+
+# Cloud-init output:
+# cat /var/log/cloud-init-output.log
+
+# APT config to avoid lock error
+#   Reading package lists...
+#   E: Could not get lock /var/lib/apt/lists/lock. It is held by process 2317 (apt-get)
+#   E: Unable to lock directory /var/lib/apt/lists/
+# man apt.conf, ls /usr/share/doc/apt/examples/
+# <https://github.com/canonical/cloud-init/blob/main/doc/examples/cloud-config-apt.txt#L177>
+# Creates /etc/apt/apt.conf.d/94cloud-init-config
 
 apt:
+  conf: |
+    Acquire::Retries "60";
+    DPkg::Lock::Timeout "60";
+
   sources:
     azure-cli:
       source: 'deb https://packages.microsoft.com/repos/azure-cli/ $RELEASE main'
@@ -116,6 +127,7 @@ package_upgrade: true
 runcmd:
  - echo "Starting runcmds at $(date +%H:%M:%S)"
  - git config --system init.defaultBranch main
+ - git config --list
  - echo "Finished runcmds at $(date +%H:%M:%S)"
 
 write_files:
