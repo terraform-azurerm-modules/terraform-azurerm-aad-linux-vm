@@ -11,7 +11,8 @@
 # sudo cat /var/lib/cloud/instance/scripts/runcmd
 
 # Cloud-init output:
-# cat /var/log/cloud-init-output.log
+# sudo cat /var/log/cloud-init-output.log
+# less /var/log/cloud-init.log
 
 # APT config to avoid lock error
 #   Reading package lists...
@@ -23,8 +24,15 @@
 
 apt:
   conf: |
-    Acquire::Retries "60";
-    DPkg::Lock::Timeout "60";
+    Acquire {
+      Retries "60";
+    };
+
+    DPkg {
+      Lock {
+        Timeout "60";
+      };
+    };
 
   sources:
     azure-cli:
@@ -124,12 +132,6 @@ packages:
 
 package_upgrade: true
 
-runcmd:
- - echo "Starting runcmds at $(date +%H:%M:%S)"
- - git config --system init.defaultBranch main
- - git config --list
- - echo "Finished runcmds at $(date +%H:%M:%S)"
-
 write_files:
 - content: |
 
@@ -138,5 +140,11 @@ write_files:
 
   append: true
   path: /etc/skel/.bashrc
+
+runcmd:
+ - echo "Starting runcmd at $(date +%H:%M:%S)"
+ - /usr/bin/git config --system init.defaultBranch main
+ - /usr/bin/git config --list
+ - echo "Finished runcmd at $(date +%H:%M:%S)"
 
 final_message: "The system is finally up, after $UPTIME seconds"
