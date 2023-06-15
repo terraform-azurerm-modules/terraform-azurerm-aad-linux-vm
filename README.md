@@ -1,4 +1,4 @@
-# terraform-azurerm-arc-onprem-linux-vm
+# terraform-azurerm-aad-linux-vm
 
 Module to create an Azure VM with the AAD extension configured.
 
